@@ -23,6 +23,8 @@ print(output.shape)
 print(output)
 '''
 
+#labelSet = ()
+
 input_signals = np.random.rand(108,) #10 input neuron, this, should come from training samples
 weight1 = np.random.randn(120, 108) #weights from input to layer 1
 weight2 = np.random.randn(36, 120) #weights from layer 1 to layer 2 
@@ -70,7 +72,7 @@ secondLayer = Layer(weight2, np.zeros(108,))
 #---------------------------- training ------------------------------------
 
 # training set
-for trainingSet in range (1, 9) :
+for trainingSet in range (1, 10) :
     # chars
     for file in os.listdir(trainingCharsetsDir + '/' + str(trainingSet)) :
         charImg = cv.imread(trainingCharsetsDir + '/' + str(trainingSet) + '/' + file, cv.IMREAD_GRAYSCALE)
@@ -85,7 +87,12 @@ for trainingSet in range (1, 9) :
         #--------------------------- 2nd ---------------------------------
         
         #------------------------- output --------------------------------
-        outputSignal = secondLayer.calculateOutputSignals()
+        outputSignals = secondLayer.calculateOutputSignals()
         #------------------------- output --------------------------------
+        
+        #---------------------- error calc -------------------------------
+        for outputSignal in range (0, 36) :
+            error = 0
+        #---------------------- error calc -------------------------------
         
 #---------------------------- training ------------------------------------
