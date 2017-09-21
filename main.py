@@ -4,7 +4,6 @@ import cv2 as cv
 from layer import Layer
 import numpy as np
 import math
-from tensorflow.contrib.slim.python.slim import learning
 
 #print(input_signals)
 #print(weight1)
