@@ -61,13 +61,13 @@ layer1Output = np.zeros(hiddenNeuronCount)
 layer2Output = np.zeros(outputNeuronCount)
 
 trainingCharsetsDir = 'trainingcharsets'
-learningRate = 0.050781
+learningRate = 0.250781
 momentum = 0.986328
 iteration = 1
 
 #input_signals = np.random.rand(108,) #10 input neuron, this, should come from training samples
-bias1 = np.random.random()
-bias2 = np.random.random()
+bias1 = np.random.uniform()
+bias2 = np.random.uniform()
 epoch = 0
 targetMse = 0.000001
 mse = 999;
@@ -147,9 +147,10 @@ while mse > targetMse :
                         layer2Error[j] = -0.9999'''
                         
                     # calculate sum
-                    sum_output = np.dot(weight2[j,], layer1Output) + bias2
+                    #sum_output = np.dot(weight2[j,], layer1Output) + bias2
                         
-                    delta2[j][i] = (learningRate * (layer2Error[j] * (1 - math.pow(math.tanh(sum_output), 2)) * layer2Output[j])) + (momentum * lastDelta2[j][i])
+                    delta2[j][i] = (learningRate * (layer2Error[j] * (1 + layer2Output[j]) * (1 - layer2Output[j]) * layer2Output[j])) + (momentum * lastDelta2[j][i])
+                    #delta2[j][i] = (learningRate * (layer2Error[j] * (1 - math.pow(math.tanh(sum_output), 2)) * layer2Output[j])) + (momentum * lastDelta2[j][i])
                     #print('Delta Layer 2 [' + str(j) + '][' + str(i) + '] : ' + str(delta2[j][i]))
                     #print(str(layer2Error[j]) + ' * ' + str((1 - math.pow(math.tanh(sum_output), 2))) + ' * ' + str(layer2Output[j])) 
             #--------------------- weights 2 delta calc ----------------------
@@ -185,7 +186,7 @@ while mse > targetMse :
                     # calculate sum
                     sum_output = np.dot(weight1[j,], inputLayerOutput)
                     
-                    delta1[j][i] = (learningRate * (layer1Error[j+1] * (1 - math.pow(math.tanh(sum_output), 2)) * layer1Output[j+1])) + (momentum * lastDelta1[j][i])
+                    delta1[j][i] = (learningRate * (layer1Error[j+1] * (1 + layer1Output[j+1]) * (1 - layer1Output[j+1]) * layer1Output[j+1])) + (momentum * lastDelta1[j][i])
                     #print('Delta Layer 1 [' + str(j) + '][' + str(i) + '] : ' + str(delta1[j][i]))
             #--------------------- weights 1 delta calc ----------------------
 
