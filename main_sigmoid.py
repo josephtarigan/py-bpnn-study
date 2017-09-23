@@ -9,23 +9,25 @@ hiddenNeuronCount = 120 + 1
 outputNeuronCount = 36
 
 trainingCharsetsDir = 'trainingcharsets'
-learningRate = 0.150781
-momentum = 0.986328
+learningRate = 0.0450781
+momentum = 0.996094
 iteration = 1
 epoch = 0
 targetMse = 0.000001
 mse = 999
 mseList = np.zeros(outputNeuronCount,)
 
-bias1 = np.random.uniform()
-bias2 = np.random.uniform()
+#bias1 = np.random.uniform()
+#bias2 = np.random.uniform()
+
+bias1, bias2 = 0.9, 0.9
 
 weight1 = np.random.uniform(low=-0.5, high=0.5, size=[hiddenNeuronCount-1, inputNeuronCount]) #weights from input to layer 1, 108 + 1 bias
 weight2 = np.random.uniform(low=-0.5, high=0.5, size=[outputNeuronCount, hiddenNeuronCount]) #weights from layer 1 to layer 2, 120 + 1 bias
 lastDelta1 = np.zeros((hiddenNeuronCount, inputNeuronCount))
 lastDelta2 = np.zeros((outputNeuronCount, hiddenNeuronCount))
 
-def sigmoid (x) : return 1/(1 + np.exp(-x))
+def sigmoid (x) : return np.clip(1/(1 + np.exp(-x)), 0.1, 0.9)
 def sigmoid_derivative (x) : return x * (1 - x)
 
 def normalize_array(array, high, low) :
@@ -36,7 +38,7 @@ def normalize_array(array, high, low) :
 while mse > targetMse :
     print ('Iteration : ' + str(iteration))
     for trainingSet in range (1, 10) :
-        print ('Charset ' + str(trainingSet))
+        #print ('Charset ' + str(trainingSet))
         # chars
         charIndex = 0;
         for file in os.listdir(trainingCharsetsDir + '/' + str(trainingSet)) :
@@ -50,8 +52,6 @@ while mse > targetMse :
             
             #-------------------------- hidden layer -----------------------------
             hiddenLayerOutput = np.append([bias2,], sigmoid(np.dot(weight1, inputLayerOutput)).flatten())
-            if (file.split('.')[0] is '0') : 
-                print(hiddenLayerOutput)
             #-------------------------- hidden layer -----------------------------
             
             #-------------------------- output layer -----------------------------
@@ -60,32 +60,32 @@ while mse > targetMse :
             
             # backpropagation
             #-------------------------- output layer -----------------------------
-            outputError = np.subtract(outputLayerOutput, cd.charsetDictionary.get(file.split('.')[0]))
-            print('Local MSE, char ' + file.split('.')[0] + ' : ' + str(math.pow(np.sum(outputError), 2)/2))
+            outputError = np.subtract(cd.charsetDictionary.get(file.split('.')[0]), outputLayerOutput)
+              
+            #print('Local MSE, char ' + file.split('.')[0] + ' : ' + str(math.pow(np.sum(outputError), 2)/2))
             mseList[charIndex] = math.pow(np.sum(outputError), 2)/2
             
-            weight2delta = (learningRate * (outputError * sigmoid_derivative(np.clip(outputLayerOutput, 0.00001, 0.99999))))
-            '''print(outputLayerOutput)
-            print(sigmoid_derivative(np.clip(outputLayerOutput, 0.00001, 0.99999)))
-            print(outputError)
-            print(weight2delta)'''
-            #input()
+            weight2delta = (np.multiply(outputError, sigmoid_derivative(outputLayerOutput)))
             for i in range (0, outputNeuronCount) :
-                '''print(weight2delta[i])
-                print(weight2[i])'''
-                weight2[i] += weight2delta[i]
-                '''print(weight2[i])
-                input()'''
+                weight2[i] = np.add(weight2[i], learningRate * np.add(np.multiply(weight2delta[i], np.dot(weight2[i], outputLayerOutput[i])), (np.multiply(momentum, lastDelta2[i]))))
             #-------------------------- output layer -----------------------------
             
             #-------------------------- hidden layer -----------------------------
             hiddenNeuronOutputError = np.dot(np.transpose(weight2), weight2delta)
-            weight1delta = (learningRate * (hiddenNeuronOutputError * sigmoid_derivative(np.clip(hiddenLayerOutput, 0.00001, 0.99999))))
+            weight1delta = (np.multiply(hiddenNeuronOutputError, sigmoid_derivative(hiddenLayerOutput)))
+            #print(hiddenNeuronOutputError)
+            #print(weight1delta)
+            #input()
             for i in range (0, hiddenNeuronCount-1) :
-                weight1[i] += weight1delta[i+1]
+                weight1[i] = np.add(weight1[i], learningRate * np.add(np.multiply(weight1delta[i+1], np.dot(weight1[i], hiddenLayerOutput[i+1])), (np.multiply(momentum, lastDelta1[i+1]))))
             #-------------------------- hidden layer -----------------------------
             
             lastDelta1 = weight1delta
             lastDelta2 = weight2delta
-    print('MSE : ' + str(np.sum(mseList)/outputNeuronCount))  
-    iteration += 1    
+    mse = np.sum(mseList)/outputNeuronCount
+    print('MSE : ' + str(mse))  
+    iteration += 1
+    
+# save weights
+np.savetxt("weight1.csv", weight1, delimiter=",")
+np.savetxt("weight2.csv", weight2, delimiter=",")
