@@ -1,45 +1,13 @@
+import math
 import os
-import charsetDictionary as cd
+
+import bipolarCharsetDictionary as cd
 import cv2 as cv
 from layer import Layer
 import numpy as np
-import math
 
-#print(input_signals)
-#print(weight1)
-
-#--------------------------- 1st ---------------------------------
-#firstLayer = Layer(weight1, input_signals)
-#layer1OutputSignal = firstLayer.calculateOutputSignals();
-#--------------------------- 1st ---------------------------------
-
-#--------------------------- 2nd ---------------------------------
-#secondLayer = Layer(weight2, layer1OutputSignal)
-#layer2OutputSignal = secondLayer.calculateOutputSignals()
-#--------------------------- 2nd ---------------------------------
-
-#print(layer1OutputSignal.shape)
-#print(layer1OutputSignal)
-
-#print(layer2OutputSignal.shape)
-#print(layer2OutputSignal)
-
-#img1 = cv.imread('trainingcharsets/1/a.jpg', cv.IMREAD_GRAYSCALE)
-#print(type(img1))
-#print(img1.shape)
-
-'''
-cv.imshow('image', img1)
-cv.waitKey()
-cv.destroyAllWindows()
-'''
-
-#print(os.path.splitext('trainingcharsets/1/a.jpg')[0])
-#splitsize = len((trainingCharsetsDir + '/1/a.jpg').split('/'))
-#print((trainingCharsetsDir + '/1/a.jpg').split('/')[splitsize-1].split('.')[0])
 
 #------------------------------ init --------------------------------------
-
 inputNeuronCount = 108 + 1
 hiddenNeuronCount = 120 + 1
 outputNeuronCount = 36
@@ -90,6 +58,7 @@ while mse > targetMse :
         for file in os.listdir(trainingCharsetsDir + '/' + str(trainingSet)) :
             charImg = cv.imread(trainingCharsetsDir + '/' + str(trainingSet) + '/' + file, cv.IMREAD_GRAYSCALE)
             normalize_array(charImg, 255, 0)
+            
             # feedforward
             #--------------------------- 1st ---------------------------------
             inputLayerOutput = np.zeros(inputNeuronCount)

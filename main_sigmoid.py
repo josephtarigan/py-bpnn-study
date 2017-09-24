@@ -1,9 +1,11 @@
-import os
-import sigmoidCharsetDictionary as cd
-import cv2 as cv
-import numpy as np
 import math
+import os
+
+import cv2 as cv
 import matplotlib.pyplot as plt
+import numpy as np
+import sigmoidCharsetDictionary as cd
+
 
 inputNeuronCount = 108 + 1
 hiddenNeuronCount = 120 + 1
@@ -92,8 +94,8 @@ while mse > targetMse :
     iteration += 1
     
 # save weights
-np.savetxt("weight1.csv", weight1, delimiter=",")
-np.savetxt("weight2.csv", weight2, delimiter=",")
+np.savetxt(os.path.expanduser("~/Workspaces/pythonenv/tensorflow/py-bpnn-study/" + "output/weight1.csv"), weight1, delimiter=",")
+np.savetxt(os.path.expanduser("~/Workspaces/pythonenv/tensorflow/py-bpnn-study/" + "output/weight2.csv"), weight2, delimiter=",")
 
 # draw MSE graph
 plt.plot(mseList)
